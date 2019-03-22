@@ -1,0 +1,1 @@
+# sample-cfn-template
