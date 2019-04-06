@@ -1,0 +1,22 @@
+---
+AWSTemplateFormatVersion: 2010-09-09
+Description:
+Parameters:
+  GitHubOwner:
+    Type: String
+    Description: "Github repository owner"
+  GitHubRepo:
+    Type: String
+    Description: "GitHub Repository name"
+  GitHubOAuthToken:
+    Type: String
+    Description: OAuthToken for GitHub Repository
+    NoEcho: true
+  WebhookSecret:
+    Type: String
+    Description: SecretToken for GitHub Webhook
+    NoEcho: true
+Resources:
+  S3SrcBucket:
+    Type: AWS::S3::Bucket
+    Description: 

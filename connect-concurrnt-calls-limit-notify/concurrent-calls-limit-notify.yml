@@ -1,0 +1,46 @@
+---
+AWSTemplateFormatVersion: 2010-09-09
+Description: Resource for notify Amazon Connect Service limit - Concurrent calls.
+Parameters:
+  InstanceId:
+    Type: String
+    Description: Amazon Connect InstanceId.
+  Email:
+    Type: String
+    Description: E-mail address for SNS topic.
+  Period:
+    Type: String
+    Description: Period to apply the specified statistics.
+    Default: 300
+  Threshold:
+    Type: String
+    Description: Value to be compared with specified Statistic value.
+    Default: 90
+Resources:
+  SNSTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      Subscription:
+        -
+          Endpoint: !Sub ${Email}
+          Protocol: email
+      TopicName: !Sub ${InstanceId}-concurrent-calls-limit-notify
+  CloudWatchAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: !Sub "Concurrent calls alarm for ${InstanceId}"
+      AlarmActions:
+      - Ref: SNSTopic
+      MetricName: ConcurrentCallsPercentage
+      Namespace: AWS/Connect
+      Statistic: Average
+      Period: !Sub ${Period}
+      EvaluationPeriods: '1'
+      Threshold: !Sub ${Threshold}
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      AlarmName: !Sub ${InstanceId}-concurrent-calls-limit-notify
+      Dimensions:
+      - Name: InstanceId
+        Value: !Sub ${InstanceId}
+      - Name: MetricGroup
+        Value: VoiceCalls
